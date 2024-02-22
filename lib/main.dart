@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:js_interop';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:remove_diacritic/remove_diacritic.dart';
@@ -85,9 +84,7 @@ class Family {
   factory Family.fromJson(Map<String, dynamic> json) {
     return Family(
       id: json['id'] as int?,
-      members: (json['members'] as List<dynamic>)
-          .map((jsonPerson) => Person.fromJson(jsonPerson as Map<String, dynamic>))
-          .toList(),
+      members: (json['members'] as List<dynamic>).map((jsonPerson) => Person.fromJson(jsonPerson as Map<String, dynamic>)).toList(),
       comment: json['comment'] as String?,
     );
   }
@@ -115,11 +112,11 @@ class Person {
         'hasAccepted': bool hasAccepted,
       } =>
         Person(
-          id: id,
-          familyId: familyId,
-          name: name,
-          hasAccepted: hasAccepted,
-        ),
+        id: id,
+        familyId: familyId,
+        name: name,
+        hasAccepted: hasAccepted,
+      ),
       _ => throw const FormatException('Failed to load album.'),
     };
   }
@@ -266,28 +263,23 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: isInvited
                     ? Column(
                         children: [
-                          familyMembers(dimensions.screenHeight, dimensions.screenWidth, appColors.greenInputBorder,
-                              appColors.greyBackground),
+                          familyMembers(dimensions.screenHeight, dimensions.screenWidth, appColors.greenInputBorder, appColors.greyBackground),
                           SizedBox(height: dimensions.screenHeight * 4),
-                          familyComments(dimensions.screenHeight, dimensions.screenWidth, appColors.greenInputBorder,
-                              appColors.greyBackground),
+                          familyComments(dimensions.screenHeight, dimensions.screenWidth, appColors.greenInputBorder, appColors.greyBackground),
                           SizedBox(height: dimensions.screenHeight * 2),
                           OutlinedButton(
                               style: ButtonStyle(
                                 foregroundColor: MaterialStateProperty.all<Color>(appColors.greyBackground), // Text color
                                 backgroundColor: MaterialStateProperty.all<Color>(appColors.darkGreenButton), // Fill color
-                                side: MaterialStateProperty.all<BorderSide>(
-                                    BorderSide(color: appColors.greyBackground)), // Border color
+                                side: MaterialStateProperty.all<BorderSide>(BorderSide(color: appColors.greyBackground)), // Border color
                               ),
                               onPressed: () {
                                 sendFamily(selectedFamily, dimensions.screenHeight, dimensions.screenWidth);
                               },
                               child: Text(
                                 "Küldés",
-                                style: textStyle().copyWith(
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: dimensions.screenWidth * 4.5,
-                                    color: appColors.greyBackground),
+                                style:
+                                    textStyle().copyWith(fontWeight: FontWeight.w900, fontSize: dimensions.screenWidth * 4.5, color: appColors.greyBackground),
                               )),
                           SizedBox(
                             height: dimensions.screenHeight * 3,
@@ -594,10 +586,7 @@ class _MyHomePageState extends State<MyHomePage> {
           height: screenHeight * 2,
         ),
         Container(
-          decoration: BoxDecoration(
-              color: greyBackground,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: borderColor, width: 2)),
+          decoration: BoxDecoration(color: greyBackground, borderRadius: BorderRadius.circular(20), border: Border.all(color: borderColor, width: 2)),
           height: screenWidth * 42,
           width: screenWidth * 80,
           child: Padding(
@@ -614,10 +603,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               controller: _familyCommentsController,
               decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: 'pl.: laktózérzékeny vagyok, nem bírom a Petyát :(',
-                  hintMaxLines: 3,
-                  hintStyle: textStyle2()),
+                  border: InputBorder.none, hintText: 'pl.: laktózérzékeny vagyok, nem bírom a Petyát :(', hintMaxLines: 3, hintStyle: textStyle2()),
               maxLines: null, // Allows for multiline input
             ),
           ),
@@ -677,17 +663,13 @@ class _MyHomePageState extends State<MyHomePage> {
                             style: ButtonStyle(
                               foregroundColor: MaterialStateProperty.all<Color>(appColors.greyBackground), // Text color
                               backgroundColor: MaterialStateProperty.all<Color>(appColors.darkGreenButton), // Fill color
-                              side: MaterialStateProperty.all<BorderSide>(
-                                  BorderSide(color: appColors.greyBackground)), // Border color
+                              side: MaterialStateProperty.all<BorderSide>(BorderSide(color: appColors.greyBackground)), // Border color
                             ),
                             onPressed: () {
                               Navigator.pop(context); // Close the modal when the button is pressed
                             },
                             child: Text("Bezár",
-                                style: textStyle().copyWith(
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: screenWidth * 4,
-                                    color: appColors.greyBackground))),
+                                style: textStyle().copyWith(fontWeight: FontWeight.w900, fontSize: screenWidth * 4, color: appColors.greyBackground))),
                       ),
                     )
                   ],
@@ -708,8 +690,7 @@ class _MyHomePageState extends State<MyHomePage> {
         body: jsonEncode(<String, dynamic>{
           'id': selectedFamily.id,
           'members': selectedFamily.members!
-              .map((member) =>
-                  {'id': member.id, 'name': member.name, 'hasAccepted': member.hasAccepted, 'familyId': member.familyId})
+              .map((member) => {'id': member.id, 'name': member.name, 'hasAccepted': member.hasAccepted, 'familyId': member.familyId})
               .toList(),
           'comment': selectedFamily.comment
         }));
