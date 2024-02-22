@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  Color greenInputBorder = Color(0xffa3b19a);
+  Color greenInputBorder = const Color(0xffa3b19a);
   Color lightGreenSelectedListTile = const Color(0xffb7c2b0);
   Color darkGreenButton = const Color(0xff9dac93);
   Color greyBackground = const Color(0xffF6F4F3);
