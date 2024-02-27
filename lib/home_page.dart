@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:remove_diacritic/remove_diacritic.dart';
-import 'package:wedding/classes/api_service.dart';
+import 'package:wedding/api_service.dart';
 import 'package:wedding/constants/colors.dart';
 import 'package:wedding/constants/dimensions.dart';
 import 'package:wedding/constants/text_styles.dart';
@@ -28,6 +28,8 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey _columnKey = GlobalKey();
 
   List<Person> _allPeople = [];
+  List<Person> _newPeople = [];
+  String name = "";
   Family selectedFamily = Family();
   List<Person> _suggestedPeople = [];
   bool isExactMatch = false;
@@ -66,6 +68,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  bool isInputVisible = false;
   @override
   Widget build(BuildContext context) {
     ScreenDimensions dimensions = ScreenDimensions(context);
@@ -95,15 +98,31 @@ class _HomePageState extends State<HomePage> {
               //   },
               // ),
               SizedBox(height: dimensions.screenHeight * 2),
+
               ImageSlider(
                 dimensions: dimensions,
               ),
               SizedBox(height: dimensions.screenHeight * 4),
-              TextCard(textCardType: "names", textCardHeight: 32, dimensions: dimensions, appColors: appColors, textStyles: textStyles),
+              TextCard(
+                  textCardType: "names",
+                  textCardHeight: 33,
+                  dimensions: dimensions,
+                  appColors: appColors,
+                  textStyles: textStyles),
               SizedBox(height: dimensions.screenHeight * 2),
-              TextCard(textCardType: "location", textCardHeight: 25, dimensions: dimensions, appColors: appColors, textStyles: textStyles),
+              TextCard(
+                  textCardType: "location",
+                  textCardHeight: 25,
+                  dimensions: dimensions,
+                  appColors: appColors,
+                  textStyles: textStyles),
               SizedBox(height: dimensions.screenHeight * 2),
-              TextCard(textCardType: "invitation", textCardHeight: 85, dimensions: dimensions, appColors: appColors, textStyles: textStyles),
+              TextCard(
+                  textCardType: "invitation",
+                  textCardHeight: 85,
+                  dimensions: dimensions,
+                  appColors: appColors,
+                  textStyles: textStyles),
               SizedBox(height: dimensions.screenHeight * 4),
               Column(
                 children: [
@@ -123,25 +142,35 @@ class _HomePageState extends State<HomePage> {
                 child: isExactMatch
                     ? Column(
                         children: [
-                          familyMembers(dimensions.screenHeight, dimensions.screenWidth, appColors.greenInputBorder, appColors.greyBackground),
+                          familyMembers(dimensions.screenHeight, dimensions.screenWidth, appColors.greenInputBorder,
+                              appColors.greyBackground),
                           SizedBox(height: dimensions.screenHeight * 4),
-                          familyComments(dimensions.screenHeight, dimensions.screenWidth, appColors.greenInputBorder, appColors.greyBackground),
+                          familyComments(dimensions.screenHeight, dimensions.screenWidth, appColors.greenInputBorder,
+                              appColors.greyBackground),
                           SizedBox(height: dimensions.screenHeight * 2),
-                          OutlinedButton(
-                              style: ButtonStyle(
-                                foregroundColor: MaterialStateProperty.all<Color>(appColors.greyBackground), // Text color
-                                backgroundColor: MaterialStateProperty.all<Color>(appColors.darkGreenButton), // Fill color
-                                side: MaterialStateProperty.all<BorderSide>(BorderSide(color: appColors.greyBackground)), // Border color
-                              ),
-                              onPressed: () {
-                                _apiService.sendFamily(selectedFamily, closeModal(dimensions.screenHeight, dimensions.screenWidth));
-                                // sendFamily(selectedFamily, dimensions.screenHeight, dimensions.screenWidth);
-                              },
-                              child: Text(
-                                "Küldés",
-                                style:
-                                    textStyle().copyWith(fontWeight: FontWeight.w900, fontSize: dimensions.screenWidth * 4.5, color: appColors.greyBackground),
-                              )),
+                          SizedBox(
+                            height: dimensions.screenWidth * 10,
+                            width: dimensions.screenWidth * 38,
+                            child: OutlinedButton(
+                                style: ButtonStyle(
+                                  foregroundColor: MaterialStateProperty.all<Color>(appColors.greyBackground), // Text color
+                                  backgroundColor: MaterialStateProperty.all<Color>(appColors.darkGreenButton), // Fill color
+                                  side: MaterialStateProperty.all<BorderSide>(
+                                      BorderSide(color: appColors.greyBackground)), // Border color
+                                ),
+                                onPressed: () {
+                                  _apiService.sendFamily(
+                                      selectedFamily, closeModal(dimensions.screenHeight, dimensions.screenWidth));
+                                  // sendFamily(selectedFamily, dimensions.screenHeight, dimensions.screenWidth);
+                                },
+                                child: Text(
+                                  "Küldés",
+                                  style: textStyle().copyWith(
+                                      fontWeight: FontWeight.w900,
+                                      fontSize: dimensions.screenWidth * 4.5,
+                                      color: appColors.greyBackground),
+                                )),
+                          ),
                           SizedBox(
                             height: dimensions.screenHeight * 3,
                           )
@@ -227,7 +256,7 @@ class _HomePageState extends State<HomePage> {
   Widget searchSuggestionList(screenHeight, screenWidth) {
     return Container(
       width: screenWidth * 77,
-      height: (_suggestedPeople.length > 3) ? 4 * screenWidth * 14 : _suggestedPeople.length * screenWidth * 14,
+      height: (_suggestedPeople.length > 3) ? 4 * screenWidth * 14 : _suggestedPeople.length * screenWidth * 12,
       decoration: BoxDecoration(
         color: appColors.darkGreenDropDownList,
         borderRadius: const BorderRadius.only(
@@ -280,7 +309,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ),
         SizedBox(
-          height: screenHeight * 2,
+          height: screenWidth * 5,
         ),
         ListView.builder(
           padding: EdgeInsets.zero,
@@ -288,25 +317,30 @@ class _HomePageState extends State<HomePage> {
           physics: const NeverScrollableScrollPhysics(),
           shrinkWrap: true,
           itemBuilder: (context, index) {
-            return Padding(
-              padding: EdgeInsets.only(top: screenHeight * 2, left: screenWidth * 15, right: screenWidth * 15),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: selectedFamily.members![index].hasAccepted ? appColors.lightGreenSelectedListTile : greyBackground,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: borderColor, // specify the border color here
-                    width: 2, // specify the border width here
-                  ),
-                ),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      selectedFamily.members![index].hasAccepted = !selectedFamily.members![index].hasAccepted;
-                    });
-                  },
-                  child: ListTile(
-                    title: Center(
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(top: screenHeight * 2, left: screenWidth * 15),
+                  child: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        selectedFamily.members![index].hasAccepted = !selectedFamily.members![index].hasAccepted;
+                      });
+                    },
+                    child: Container(
+                      width: screenWidth * 60,
+                      height: screenWidth * 12,
+                      decoration: BoxDecoration(
+                        color: selectedFamily.members![index].hasAccepted
+                            ? appColors.lightGreenSelectedListTile
+                            : greyBackground,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: borderColor, // specify the border color here
+                          width: 2, // specify the border width here
+                        ),
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -314,30 +348,134 @@ class _HomePageState extends State<HomePage> {
                           Text(
                             selectedFamily.members![index].name,
                             style: selectedFamily.members![index].hasAccepted
-                                ? textStyle2().copyWith(color: greyBackground, fontWeight: FontWeight.w900)
-                                : textStyle2(),
+                                ? textStyle2().copyWith(
+                                    fontSize: screenWidth * 3.5, color: greyBackground, fontWeight: FontWeight.w900)
+                                : textStyle2().copyWith(fontSize: screenWidth * 3.5),
                           ),
                           if (selectedFamily.members![index].hasAccepted)
-                            SizedBox(
-                              width: screenWidth * 3,
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SizedBox(width: screenWidth * 2),
+                                Padding(
+                                  padding: EdgeInsets.only(bottom: screenHeight * 0.5),
+                                  child: Icon(Icons.check,
+                                      size: screenWidth * 5, // Adjust the size as needed
+                                      color: greyBackground // Adjust the color as needed
+                                      ),
+                                ),
+                              ],
                             ),
-                          if (selectedFamily.members![index].hasAccepted)
-                            Padding(
-                              padding: EdgeInsets.only(bottom: screenHeight * 0.5),
-                              child: Icon(Icons.check,
-                                  size: screenWidth * 5, // Adjust the size as needed
-                                  color: greyBackground // Adjust the color as needed
-                                  ),
-                            )
                         ],
                       ),
                     ),
                   ),
                 ),
-              ),
+                if (selectedFamily.members![index].isNew)
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: screenWidth * 2,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: screenHeight * 2),
+                        child: IconButton(
+                          icon: Icon(Icons.delete),
+                          iconSize: screenWidth * 8, // Adjust the size as needed
+                          color: Color.fromARGB(255, 116, 35, 30),
+                          onPressed: () {
+                            setState(() {
+                              selectedFamily.members!.removeAt(index);
+                            });
+                          }, // Adjust the color as needed
+                        ),
+                      ),
+                    ],
+                  )
+              ],
             );
           },
         ),
+        SizedBox(
+          height: screenWidth * 4,
+        ),
+        (isInputVisible)
+            ? Padding(
+                padding: EdgeInsets.only(left: screenWidth * 15),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: screenWidth * 60,
+                      height: screenWidth * 12,
+                      child: TextField(
+                        style: textStyle2(),
+                        onChanged: (value) {
+                          // Update the name variable when text changes
+                          setState(() {
+                            name = value;
+                          });
+                        },
+                        decoration: InputDecoration(
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ), // Outline border
+                            labelText: 'Plusz fő hozzáadása',
+                            labelStyle: textStyle2(),
+                            suffixIcon: Padding(
+                              padding: EdgeInsets.only(right: screenWidth * 2),
+                              child: IconButton(
+                                icon: const Icon(Icons.check),
+                                onPressed: () {
+                                  setState(() {
+                                    selectedFamily.members!.add(Person(name: name, hasAccepted: true, isNew: true));
+
+                                    name = "";
+                                    isInputVisible = false;
+                                  });
+                                },
+                              ),
+                            )
+                            // If text is empty, don't show the icon),
+                            ),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: screenWidth * 2,
+                        ),
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          iconSize: screenWidth * 8, // Adjust the size as needed
+                          color: Color.fromARGB(255, 116, 35, 30), // Adjust the color as needed
+                          onPressed: () {
+                            setState(() {
+                              isInputVisible = false;
+                            });
+                          },
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              )
+            : SizedBox(
+                height: screenWidth * 10,
+                child: OutlinedButton(
+                  onPressed: () {
+                    setState(() {
+                      isInputVisible = true;
+                    });
+                  },
+                  child: Icon(Icons.add),
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20), // Set borderRadius to zero
+                    ),
+                  ),
+                ),
+              ),
       ],
     );
   }
@@ -353,7 +491,10 @@ class _HomePageState extends State<HomePage> {
           height: screenHeight * 2,
         ),
         Container(
-          decoration: BoxDecoration(color: greyBackground, borderRadius: BorderRadius.circular(20), border: Border.all(color: borderColor, width: 2)),
+          decoration: BoxDecoration(
+              color: greyBackground,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: borderColor, width: 2)),
           height: screenWidth * 42,
           width: screenWidth * 80,
           child: Padding(
@@ -370,7 +511,10 @@ class _HomePageState extends State<HomePage> {
               },
               controller: _familyCommentsController,
               decoration: InputDecoration(
-                  border: InputBorder.none, hintText: 'pl.: laktózérzékeny vagyok, nem bírom a Petyát :(', hintMaxLines: 3, hintStyle: textStyle2()),
+                  border: InputBorder.none,
+                  hintText: 'pl.: laktózérzékeny vagyok, nem bírom a Petyát :(',
+                  hintMaxLines: 3,
+                  hintStyle: textStyle2()),
               maxLines: null, // Allows for multiline input
             ),
           ),
@@ -398,12 +542,13 @@ class _HomePageState extends State<HomePage> {
             child: Center(
               child: Container(
                 decoration: BoxDecoration(color: appColors.greyBackground, borderRadius: BorderRadius.circular(20)),
-                height: screenWidth * 61,
+                height: screenWidth * 60,
                 width: screenWidth * 75,
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       'Köszönjük, hogy kitöltötted!',
@@ -418,7 +563,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     SizedBox(height: screenHeight),
                     Text(
-                      'Ha bármi kérdésed lenne hívj bátran a következő számon:\n+36 20 435 8697',
+                      'Ha bármi kérdésed lenne hívj bátran:\nBlanka: +36 30 258 4048\nPetya: +36 30 011 8743',
                       style: textStyle2().copyWith(fontSize: screenWidth * 4),
                       textAlign: TextAlign.center,
                     ),
@@ -426,17 +571,23 @@ class _HomePageState extends State<HomePage> {
                     Padding(
                       padding: EdgeInsets.only(left: screenWidth * 10, right: screenWidth * 10),
                       child: Container(
+                        height: screenWidth * 10,
+                        width: screenWidth * 20,
                         child: OutlinedButton(
                             style: ButtonStyle(
                               foregroundColor: MaterialStateProperty.all<Color>(appColors.greyBackground), // Text color
                               backgroundColor: MaterialStateProperty.all<Color>(appColors.darkGreenButton), // Fill color
-                              side: MaterialStateProperty.all<BorderSide>(BorderSide(color: appColors.greyBackground)), // Border color
+                              side: MaterialStateProperty.all<BorderSide>(
+                                  BorderSide(color: appColors.greyBackground)), // Border color
                             ),
                             onPressed: () {
                               Navigator.pop(context); // Close the modal when the button is pressed
                             },
                             child: Text("Bezár",
-                                style: textStyle().copyWith(fontWeight: FontWeight.w900, fontSize: screenWidth * 4, color: appColors.greyBackground))),
+                                style: textStyle().copyWith(
+                                    fontWeight: FontWeight.w900,
+                                    fontSize: screenWidth * 4,
+                                    color: appColors.greyBackground))),
                       ),
                     )
                   ],
