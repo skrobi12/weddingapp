@@ -81,13 +81,13 @@ class _SearchInputFieldState extends State<SearchInputField> {
             // Add a delay before scrolling
             scrollToBottom();
           },
-          style: widget.textStyles.blackText1(widget.dimensions),
+          style: widget.textStyles.blackText3(widget.dimensions),
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
             ),
             labelText: _inputLabel,
-            labelStyle: widget.textStyles.blackText1(widget.dimensions),
+            labelStyle: widget.textStyles.blackText3(widget.dimensions),
             suffixIcon: widget.searchInputFieldController.text.isNotEmpty
                 ? IconButton(
                     icon: const Icon(Icons.clear),

@@ -1,14 +1,17 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:remove_diacritic/remove_diacritic.dart';
-import 'package:wedding/api_service.dart';
+import 'package:wedding/constants/button.dart';
+import 'package:wedding/selection/comment_section.dart';
+import 'package:wedding/selection/text_title.dart';
+import 'package:wedding/services/api_service.dart';
 import 'package:wedding/constants/colors.dart';
 import 'package:wedding/constants/dimensions.dart';
 import 'package:wedding/constants/text_styles.dart';
 import 'package:wedding/classes/family_class.dart';
 import 'package:wedding/classes/person_class.dart';
-import 'package:wedding/welcome_part/image_slider.dart';
-import 'package:wedding/welcome_part/text_card.dart';
+import 'package:wedding/landing_page/image_slider.dart';
+import 'package:wedding/landing_page/text_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -28,7 +31,6 @@ class _HomePageState extends State<HomePage> {
   final GlobalKey _columnKey = GlobalKey();
 
   List<Person> _allPeople = [];
-  List<Person> _newPeople = [];
   String name = "";
   Family selectedFamily = Family();
   List<Person> _suggestedPeople = [];
@@ -84,23 +86,22 @@ class _HomePageState extends State<HomePage> {
           controller: _scrollController,
           child: Column(
             children: [
-              // FutureBuilder<List<Person>>(
-              //   future: futurePeople,
-              //   builder: (context, snapshot) {
-              //     if (snapshot.hasData) {
-              //       _allPeople = snapshot.data!;
-              //       return Container();
-              //     } else if (snapshot.hasError) {
-              //       return Text('${snapshot.error}');
-              //     } else {
-              //       return const CircularProgressIndicator();
-              //     }
-              //   },
-              // ),
               SizedBox(height: dimensions.screenHeight * 2),
-
               ImageSlider(
                 dimensions: dimensions,
+              ),
+              Container(
+                height: 400,
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ), // Outline border
+                    labelText: 'Írd be a nevedet (pl.: Temmel Péter)',
+
+                    // If text is empty, don't show the icon),
+                  ),
+                ),
               ),
               SizedBox(height: dimensions.screenHeight * 4),
               TextCard(
@@ -124,14 +125,10 @@ class _HomePageState extends State<HomePage> {
                   appColors: appColors,
                   textStyles: textStyles),
               SizedBox(height: dimensions.screenHeight * 4),
-              Column(
-                children: [
-                  searchInputField(dimensions.screenWidth),
-                  (_searchInputFieldFocusNode.hasFocus && _suggestedPeople.isNotEmpty)
-                      ? searchSuggestionList(dimensions.screenHeight, dimensions.screenWidth)
-                      : Container()
-                ],
-              ),
+              searchInputField(dimensions),
+              (_searchInputFieldFocusNode.hasFocus && _suggestedPeople.isNotEmpty)
+                  ? searchSuggestionList(dimensions.screenHeight, dimensions.screenWidth)
+                  : Container(),
               SizedBox(height: dimensions.screenHeight * 2),
               Container(
                 width: dimensions.screenWidth * 90,
@@ -144,32 +141,29 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           familyMembers(dimensions.screenHeight, dimensions.screenWidth, appColors.greenInputBorder,
                               appColors.greyBackground),
-                          SizedBox(height: dimensions.screenHeight * 4),
-                          familyComments(dimensions.screenHeight, dimensions.screenWidth, appColors.greenInputBorder,
-                              appColors.greyBackground),
-                          SizedBox(height: dimensions.screenHeight * 2),
+                          SizedBox(height: dimensions.screenWidth * 8),
+                          TextTitle(
+                            dimensions: dimensions,
+                            textStyles: textStyles,
+                          ),
                           SizedBox(
-                            height: dimensions.screenWidth * 10,
-                            width: dimensions.screenWidth * 38,
-                            child: OutlinedButton(
-                                style: ButtonStyle(
-                                  foregroundColor: MaterialStateProperty.all<Color>(appColors.greyBackground), // Text color
-                                  backgroundColor: MaterialStateProperty.all<Color>(appColors.darkGreenButton), // Fill color
-                                  side: MaterialStateProperty.all<BorderSide>(
-                                      BorderSide(color: appColors.greyBackground)), // Border color
-                                ),
-                                onPressed: () {
-                                  _apiService.sendFamily(
-                                      selectedFamily, closeModal(dimensions.screenHeight, dimensions.screenWidth));
-                                  // sendFamily(selectedFamily, dimensions.screenHeight, dimensions.screenWidth);
-                                },
-                                child: Text(
-                                  "Küldés",
-                                  style: textStyle().copyWith(
-                                      fontWeight: FontWeight.w900,
-                                      fontSize: dimensions.screenWidth * 4.5,
-                                      color: appColors.greyBackground),
-                                )),
+                            height: dimensions.screenWidth * 4,
+                          ),
+                          CommentSection(
+                              dimensions: dimensions,
+                              appColors: appColors,
+                              textStyles: textStyles,
+                              selectedFamily: selectedFamily),
+                          SizedBox(height: dimensions.screenWidth * 4),
+                          Button(
+                            onPressedFunction: () {
+                              _apiService.sendFamily(
+                                  selectedFamily, closingModal(dimensions.screenHeight, dimensions.screenWidth));
+                            },
+                            buttonTitle: 'Küldés',
+                            dimensions: dimensions,
+                            appColors: appColors,
+                            textStyles: textStyles,
                           ),
                           SizedBox(
                             height: dimensions.screenHeight * 3,
@@ -197,57 +191,63 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget searchInputField(screenWidth) {
+  Widget searchInputField(dimensions) {
     return Padding(
-      padding: EdgeInsets.only(left: screenWidth * 7.5, right: screenWidth * 7.5),
+      padding: EdgeInsets.only(left: dimensions.screenWidth * 7.5, right: dimensions.screenWidth * 7.5),
       child: FocusScope(
-          child: TextField(
-        key: _columnKey,
-        controller: _searchInputFieldController,
-        focusNode: _searchInputFieldFocusNode,
-        onTap: () async {
-          _allPeople = await _apiService.fetchPeople();
-        },
-        onSubmitted: (value) {
-          setState(() {
-            // Check if the entered value is in the options list
-            isExactMatch = _allPeople.contains(value);
-          });
-        },
-        onChanged: (String value) {
-          _suggestedPeople = _allPeople;
-          setState(() {
-            // Check if the entered value is in the suggestions list
+          child: Container(
+        height: dimensions.screenWidth * 12,
+        child: TextField(
+          key: _columnKey,
+          controller: _searchInputFieldController,
+          focusNode: _searchInputFieldFocusNode,
+          onTap: () async {
+            _allPeople = await _apiService.fetchPeople();
+          },
+          onSubmitted: (value) {
+            setState(() {
+              // Check if the entered value is in the options list
+              isExactMatch = _allPeople.contains(value);
+            });
+          },
+          onChanged: (String value) {
+            _suggestedPeople = _allPeople;
+            setState(() {
+              // Check if the entered value is in the suggestions list
 
-            _suggestedPeople = _allPeople.where((option) {
-              return removeDiacritics(option.name.toLowerCase()).contains(removeDiacritics(value.toLowerCase()));
-            }).toList();
-            isNotEmpty = _suggestedPeople.isNotEmpty;
-          });
+              _suggestedPeople = _allPeople.where((option) {
+                return removeDiacritics(option.name.toLowerCase()).contains(removeDiacritics(value.toLowerCase()));
+              }).toList();
+              isNotEmpty = _suggestedPeople.isNotEmpty;
+            });
 
-          // Add a delay before scrolling
-          scrollToBottom();
-        },
-        style: textStyle2(),
-        decoration: InputDecoration(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20),
-          ), // Outline border
-          labelText: 'Írd be a nevedet (pl.: Temmel Péter)',
-          labelStyle: textStyle2(),
-          suffixIcon: _searchInputFieldController.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    setState(() {
-                      _searchInputFieldController.clear();
-                      // Clear any suggestions and related states
-                      _suggestedPeople.clear();
-                      isExactMatch = false;
-                    });
-                  },
-                )
-              : null, // If text is empty, don't show the icon),
+            // Add a delay before scrolling
+            scrollToBottom();
+          },
+          style: textStyle2(),
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(horizontal: dimensions.screenWidth * 4),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+            ), // Outline border
+            labelText: 'Írd be a nevedet (pl.: Temmel Péter)',
+            labelStyle: textStyles.blackText3(dimensions),
+            suffixIcon: _searchInputFieldController.text.isNotEmpty
+                ? IconButton(
+                    iconSize: dimensions.screenWidth * 5,
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      setState(() {
+                        _searchInputFieldController.clear();
+                        // Clear any suggestions and related states
+                        _suggestedPeople.clear();
+                        isExactMatch = false;
+                        isInputVisible = false;
+                      });
+                    },
+                  )
+                : null, // If text is empty, don't show the icon),
+          ),
         ),
       )),
     );
@@ -417,6 +417,7 @@ class _HomePageState extends State<HomePage> {
                           });
                         },
                         decoration: InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(horizontal: screenWidth * 4),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                             ), // Outline border
@@ -480,49 +481,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget familyComments(screenHeight, screenWidth, borderColor, greyBackground) {
-    return Column(
-      children: [
-        Text(
-          "Add meg a megjegyzéseidet",
-          style: textStyle2().copyWith(fontSize: screenWidth * 4.8),
-        ),
-        SizedBox(
-          height: screenHeight * 2,
-        ),
-        Container(
-          decoration: BoxDecoration(
-              color: greyBackground,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: borderColor, width: 2)),
-          height: screenWidth * 42,
-          width: screenWidth * 80,
-          child: Padding(
-            padding: EdgeInsets.only(left: screenWidth * 4, right: screenWidth * 4),
-            child: TextField(
-              style: textStyle2(),
-              onTap: () {
-                // Add a delay before scrolling
-                scrollToBottom();
-              },
-              onChanged: (value) {
-                // Save the entered data when it changes
-                selectedFamily.comment = value;
-              },
-              controller: _familyCommentsController,
-              decoration: InputDecoration(
-                  border: InputBorder.none,
-                  hintText: 'pl.: laktózérzékeny vagyok, nem bírom a Petyát :(',
-                  hintMaxLines: 3,
-                  hintStyle: textStyle2()),
-              maxLines: null, // Allows for multiline input
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   TextStyle textStyle() {
     return TextStyle(fontFamily: "Kalam", color: appColors.darkBrownText);
   }
@@ -531,7 +489,7 @@ class _HomePageState extends State<HomePage> {
     return TextStyle(fontFamily: "Kalam", color: appColors.blackText);
   }
 
-  void closeModal(screenHeight, screenWidth) {
+  void closingModal(screenHeight, screenWidth) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -542,7 +500,7 @@ class _HomePageState extends State<HomePage> {
             child: Center(
               child: Container(
                 decoration: BoxDecoration(color: appColors.greyBackground, borderRadius: BorderRadius.circular(20)),
-                height: screenWidth * 60,
+                height: screenWidth * 68,
                 width: screenWidth * 75,
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
@@ -563,7 +521,18 @@ class _HomePageState extends State<HomePage> {
                     ),
                     SizedBox(height: screenHeight),
                     Text(
-                      'Ha bármi kérdésed lenne hívj bátran:\nBlanka: +36 30 258 4048\nPetya: +36 30 011 8743',
+                      'Ha bármi kérdésed lenne, hívj bátran:',
+                      style: textStyle2().copyWith(fontSize: screenWidth * 4),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: screenHeight),
+                    Text(
+                      'Blanka: +36 30 258 4048',
+                      style: textStyle2().copyWith(fontSize: screenWidth * 4),
+                      textAlign: TextAlign.center,
+                    ),
+                    Text(
+                      'Petya: +36 30 011 8743',
                       style: textStyle2().copyWith(fontSize: screenWidth * 4),
                       textAlign: TextAlign.center,
                     ),
