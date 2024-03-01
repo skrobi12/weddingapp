@@ -17,7 +17,7 @@ class TextCard extends StatelessWidget {
   final _name1 = "Blanka";
   final _name2 = "Petya";
   final _location = "Szentpéterfa";
-  final _date = "2024.07.27";
+  final _date = "2024.07.27.";
   final _invitation =
       "Kedves Családunk, Rokonaink és Barátaink!\nÖrömmel tudatjuk, hogy nemsokára eljön a nagy nap,\nmikor mindazok előtt, akik fontosak az életünkben,\nörök hűséget fogadunk egymásnak.\n\nSzeretnénk, ha velünk együtt örülnétek és\nünnepelnétek ezen a fontos napon,\nezért szeretettel meghívunk\n2024. Július 27-én 17:00 órakor a\nszentpéterfai Szent István Király kápolnában tartandó\nesküvőnkre, az azt követő vacsorára,\nmajd a hajnalig tartó mulatságra.";
 
@@ -28,10 +28,11 @@ class TextCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         color: appColors.lightGreenCard, // Adjust this color as per your requirement
       ),
-      height: dimensions.screenWidth * textCardHeight,
+      height: dimensions.screenHeight * textCardHeight,
       width: dimensions.screenWidth * 85,
       child: Padding(
-        padding: EdgeInsets.all(dimensions.screenWidth * 3.5),
+        padding: EdgeInsets.only(
+            left: dimensions.screenWidth * 3.5, right: dimensions.screenWidth * 3.5, top: dimensions.screenHeight * 1.8, bottom: dimensions.screenHeight * 1.8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -59,7 +60,7 @@ class TextCard extends StatelessWidget {
                     _location,
                     style: textStyles.darkBrownText4(dimensions),
                   ),
-                  SizedBox(height: dimensions.screenWidth * 2),
+                  SizedBox(height: dimensions.screenHeight * 2),
                   Text(
                     _date,
                     style: textStyles.darkBrownText4(dimensions),

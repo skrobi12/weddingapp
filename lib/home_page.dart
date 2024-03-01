@@ -2,7 +2,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:remove_diacritic/remove_diacritic.dart';
 import 'package:wedding/constants/button.dart';
+import 'package:wedding/selection/add_members.dart';
+import 'package:wedding/selection/closing_modal.dart';
 import 'package:wedding/selection/comment_section.dart';
+import 'package:wedding/selection/list_of_members.dart';
 import 'package:wedding/selection/text_title.dart';
 import 'package:wedding/services/api_service.dart';
 import 'package:wedding/constants/colors.dart';
@@ -23,29 +26,24 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   AppColors appColors = AppColors();
   TextStyles textStyles = TextStyles();
+  ClosingModal closingModal = ClosingModal();
 
   final TextEditingController _searchInputFieldController = TextEditingController();
-  final TextEditingController _familyCommentsController = TextEditingController();
-  final FocusNode _searchInputFieldFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
   final GlobalKey _columnKey = GlobalKey();
 
   List<Person> _allPeople = [];
-  String name = "";
-  Family selectedFamily = Family();
   List<Person> _suggestedPeople = [];
+  Family selectedFamily = Family();
+  String name = "";
+
   bool isExactMatch = false;
   bool isNotEmpty = true;
+  bool isInputVisible = false;
 
   late Future<List<Person>> futurePeople;
   late Family futureFamily;
-  ApiService _apiService = ApiService();
-
-  @override
-  void initState() {
-    super.initState();
-    futurePeople = _apiService.fetchPeople();
-  }
+  final ApiService _apiService = ApiService();
 
   @override
   void dispose() {
@@ -62,130 +60,97 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void scrollToElement(screenWidth) {
+  void scrollToElement(dimension) {
     _scrollController.animateTo(
-      screenWidth * 200, //180
+      dimension.screenHeight * 140,
       duration: const Duration(milliseconds: 500),
       curve: Curves.easeInOut,
     );
   }
 
-  bool isInputVisible = false;
+  void fechPeopleFunction() async {
+    _allPeople = await _apiService.fetchPeople();
+  }
+
   @override
   Widget build(BuildContext context) {
     ScreenDimensions dimensions = ScreenDimensions(context);
-
+    fechPeopleFunction();
     return Scaffold(
       backgroundColor: appColors.greyBackground,
-      body: GestureDetector(
-        onTap: () {
-          _searchInputFieldFocusNode.unfocus();
-          FocusManager.instance.primaryFocus?.unfocus();
-        },
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          child: Column(
-            children: [
-              SizedBox(height: dimensions.screenHeight * 2),
-              ImageSlider(
-                dimensions: dimensions,
+      body: SingleChildScrollView(
+        controller: _scrollController,
+        child: Column(
+          children: [
+            SizedBox(height: dimensions.screenHeight * 2),
+            ImageSlider(
+              dimensions: dimensions,
+            ),
+            SizedBox(height: dimensions.screenHeight * 4),
+            TextCard(textCardType: "names", textCardHeight: 18, dimensions: dimensions, appColors: appColors, textStyles: textStyles),
+            SizedBox(height: dimensions.screenHeight * 2),
+            TextCard(textCardType: "location", textCardHeight: 14, dimensions: dimensions, appColors: appColors, textStyles: textStyles),
+            SizedBox(height: dimensions.screenHeight * 2),
+            TextCard(textCardType: "invitation", textCardHeight: 45, dimensions: dimensions, appColors: appColors, textStyles: textStyles),
+            SizedBox(height: dimensions.screenHeight * 4),
+            searchInputField(dimensions),
+            //(_searchInputFieldFocusNode.hasFocus && _suggestedPeople.isNotEmpty)
+            if (_suggestedPeople.isNotEmpty) searchSuggestionList(dimensions),
+            SizedBox(height: dimensions.screenHeight * 2),
+            Container(
+              width: dimensions.screenWidth * 90,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: appColors.greyCard,
               ),
-              Container(
-                height: 400,
-                child: TextField(
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ), // Outline border
-                    labelText: 'Írd be a nevedet (pl.: Temmel Péter)',
-
-                    // If text is empty, don't show the icon),
-                  ),
-                ),
-              ),
-              SizedBox(height: dimensions.screenHeight * 4),
-              TextCard(
-                  textCardType: "names",
-                  textCardHeight: 33,
-                  dimensions: dimensions,
-                  appColors: appColors,
-                  textStyles: textStyles),
-              SizedBox(height: dimensions.screenHeight * 2),
-              TextCard(
-                  textCardType: "location",
-                  textCardHeight: 25,
-                  dimensions: dimensions,
-                  appColors: appColors,
-                  textStyles: textStyles),
-              SizedBox(height: dimensions.screenHeight * 2),
-              TextCard(
-                  textCardType: "invitation",
-                  textCardHeight: 85,
-                  dimensions: dimensions,
-                  appColors: appColors,
-                  textStyles: textStyles),
-              SizedBox(height: dimensions.screenHeight * 4),
-              searchInputField(dimensions),
-              (_searchInputFieldFocusNode.hasFocus && _suggestedPeople.isNotEmpty)
-                  ? searchSuggestionList(dimensions.screenHeight, dimensions.screenWidth)
-                  : Container(),
-              SizedBox(height: dimensions.screenHeight * 2),
-              Container(
-                width: dimensions.screenWidth * 90,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  color: appColors.greyCard,
-                ),
-                child: isExactMatch
-                    ? Column(
-                        children: [
-                          familyMembers(dimensions.screenHeight, dimensions.screenWidth, appColors.greenInputBorder,
-                              appColors.greyBackground),
-                          SizedBox(height: dimensions.screenWidth * 8),
-                          TextTitle(
-                            dimensions: dimensions,
-                            textStyles: textStyles,
-                          ),
-                          SizedBox(
-                            height: dimensions.screenWidth * 4,
-                          ),
-                          CommentSection(
-                              dimensions: dimensions,
-                              appColors: appColors,
-                              textStyles: textStyles,
-                              selectedFamily: selectedFamily),
-                          SizedBox(height: dimensions.screenWidth * 4),
-                          Button(
-                            onPressedFunction: () {
-                              _apiService.sendFamily(
-                                  selectedFamily, closingModal(dimensions.screenHeight, dimensions.screenWidth));
-                            },
-                            buttonTitle: 'Küldés',
-                            dimensions: dimensions,
-                            appColors: appColors,
-                            textStyles: textStyles,
-                          ),
-                          SizedBox(
-                            height: dimensions.screenHeight * 3,
-                          )
-                        ],
-                      )
-                    : isNotEmpty
-                        ? Container()
-                        : Padding(
-                            padding: EdgeInsets.all(dimensions.screenWidth * 3),
-                            child: const Text(
-                              "Úgy látsztik téged nem hívtak meg, vagy rossz névvel próbálkozol :(",
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontFamily: "Kalam",
-                              ),
+              child: isExactMatch
+                  ? Column(
+                      children: [
+                        familyMembers(dimensions, appColors.greenInputBorder, appColors.greyBackground),
+                        SizedBox(height: dimensions.screenWidth * 8),
+                        TextTitle(
+                          dimensions: dimensions,
+                          textStyles: textStyles,
+                        ),
+                        SizedBox(
+                          height: dimensions.screenWidth * 4,
+                        ),
+                        CommentSection(
+                          dimensions: dimensions,
+                          appColors: appColors,
+                          textStyles: textStyles,
+                          selectedFamily: selectedFamily,
+                        ),
+                        SizedBox(height: dimensions.screenWidth * 4),
+                        Button(
+                          onPressedFunction: () {
+                            _apiService.sendFamily(selectedFamily, closingModal.showClosingModal(context, dimensions, appColors, textStyles));
+                          },
+                          buttonTitle: 'Küldés',
+                          dimensions: dimensions,
+                          appColors: appColors,
+                          textStyles: textStyles,
+                        ),
+                        SizedBox(
+                          height: dimensions.screenHeight * 3,
+                        )
+                      ],
+                    )
+                  : isNotEmpty
+                      ? Container()
+                      : Padding(
+                          padding: EdgeInsets.all(dimensions.screenWidth * 3),
+                          child: const Text(
+                            "Úgy látsztik téged nem hívtak meg, vagy rossz névvel próbálkozol :(",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontFamily: "Kalam",
                             ),
                           ),
-              ),
-              SizedBox(height: dimensions.screenHeight * 2)
-            ],
-          ),
+                        ),
+            ),
+            SizedBox(height: dimensions.screenHeight * 2)
+          ],
         ),
       ),
     );
@@ -194,16 +159,12 @@ class _HomePageState extends State<HomePage> {
   Widget searchInputField(dimensions) {
     return Padding(
       padding: EdgeInsets.only(left: dimensions.screenWidth * 7.5, right: dimensions.screenWidth * 7.5),
-      child: FocusScope(
-          child: Container(
-        height: dimensions.screenWidth * 12,
+      child: SizedBox(
+        width: dimensions.screenWidth * 85,
         child: TextField(
           key: _columnKey,
           controller: _searchInputFieldController,
-          focusNode: _searchInputFieldFocusNode,
-          onTap: () async {
-            _allPeople = await _apiService.fetchPeople();
-          },
+          onTap: () async {},
           onSubmitted: (value) {
             setState(() {
               // Check if the entered value is in the options list
@@ -211,52 +172,50 @@ class _HomePageState extends State<HomePage> {
             });
           },
           onChanged: (String value) {
-            _suggestedPeople = _allPeople;
             setState(() {
               // Check if the entered value is in the suggestions list
-
               _suggestedPeople = _allPeople.where((option) {
                 return removeDiacritics(option.name.toLowerCase()).contains(removeDiacritics(value.toLowerCase()));
               }).toList();
               isNotEmpty = _suggestedPeople.isNotEmpty;
             });
-
-            // Add a delay before scrolling
             scrollToBottom();
           },
-          style: textStyle2(),
+          style: textStyles.blackText3(dimensions),
           decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(horizontal: dimensions.screenWidth * 4),
+            contentPadding: EdgeInsets.symmetric(horizontal: dimensions.screenHeight * 2, vertical: dimensions.screenHeight * 2),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(20),
             ), // Outline border
             labelText: 'Írd be a nevedet (pl.: Temmel Péter)',
             labelStyle: textStyles.blackText3(dimensions),
             suffixIcon: _searchInputFieldController.text.isNotEmpty
-                ? IconButton(
-                    iconSize: dimensions.screenWidth * 5,
-                    icon: const Icon(Icons.clear),
-                    onPressed: () {
-                      setState(() {
-                        _searchInputFieldController.clear();
-                        // Clear any suggestions and related states
-                        _suggestedPeople.clear();
-                        isExactMatch = false;
-                        isInputVisible = false;
-                      });
-                    },
+                ? Padding(
+                    padding: EdgeInsets.only(right: dimensions.screenWidth * 2),
+                    child: IconButton(
+                      iconSize: dimensions.screenHeight * 2.5,
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        setState(() {
+                          _searchInputFieldController.clear();
+                          _suggestedPeople.clear();
+                          isExactMatch = false;
+                          isNotEmpty = true;
+                        });
+                      },
+                    ),
                   )
                 : null, // If text is empty, don't show the icon),
           ),
         ),
-      )),
+      ),
     );
   }
 
-  Widget searchSuggestionList(screenHeight, screenWidth) {
+  Widget searchSuggestionList(dimensions) {
     return Container(
-      width: screenWidth * 77,
-      height: (_suggestedPeople.length > 3) ? 4 * screenWidth * 14 : _suggestedPeople.length * screenWidth * 12,
+      width: dimensions.screenWidth * 77,
+      height: (_suggestedPeople.length > 3) ? 4 * dimensions.screenHeight * 5.5 : _suggestedPeople.length * dimensions.screenHeight * 5.5,
       decoration: BoxDecoration(
         color: appColors.darkGreenDropDownList,
         borderRadius: const BorderRadius.only(
@@ -274,19 +233,18 @@ class _HomePageState extends State<HomePage> {
             title: Center(
               child: Text(
                 _suggestedPeople[index].name,
-                style: textStyle2(),
+                style: textStyles.blackText3(dimensions),
               ),
             ),
             onTap: () async {
+              // Maybe here?
               selectedFamily = await _apiService.fetchFamily(_suggestedPeople[index].familyId);
               setState(() {
-                isExactMatch = true;
-
                 _searchInputFieldController.text = _suggestedPeople[index].name;
                 _suggestedPeople = [];
+                isExactMatch = true;
               });
-              scrollToElement(screenWidth);
-              FocusManager.instance.primaryFocus?.unfocus();
+              scrollToElement(dimensions);
             },
           );
         },
@@ -294,22 +252,22 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget familyMembers(screenHeight, screenWidth, borderColor, greyBackground) {
+  Widget familyMembers(dimensions, borderColor, greyBackground) {
     return Column(
       children: [
         SizedBox(
-          height: screenHeight * 3,
+          height: dimensions.screenHeight * 3,
         ),
         Padding(
-          padding: EdgeInsets.only(right: screenWidth * 3, left: screenWidth * 3),
+          padding: EdgeInsets.only(right: dimensions.screenWidth * 3, left: dimensions.screenWidth * 3),
           child: Text(
             "Jelöld be, melyik családtagod tud részt venni az esküvőn",
             textAlign: TextAlign.center,
-            style: textStyle2().copyWith(fontSize: screenWidth * 4.8),
+            style: textStyles.blackText5(dimensions),
           ),
         ),
         SizedBox(
-          height: screenWidth * 5,
+          height: dimensions.screenWidth * 5,
         ),
         ListView.builder(
           padding: EdgeInsets.zero,
@@ -321,7 +279,7 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(top: screenHeight * 2, left: screenWidth * 15),
+                  padding: EdgeInsets.only(top: dimensions.screenHeight * 2, left: dimensions.screenWidth * 15),
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
@@ -329,12 +287,10 @@ class _HomePageState extends State<HomePage> {
                       });
                     },
                     child: Container(
-                      width: screenWidth * 60,
-                      height: screenWidth * 12,
+                      width: dimensions.screenWidth * 60,
+                      height: dimensions.screenWidth * 12,
                       decoration: BoxDecoration(
-                        color: selectedFamily.members![index].hasAccepted
-                            ? appColors.lightGreenSelectedListTile
-                            : greyBackground,
+                        color: selectedFamily.members![index].hasAccepted ? appColors.lightGreenSelectedListTile : greyBackground,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
                           color: borderColor, // specify the border color here
@@ -347,20 +303,17 @@ class _HomePageState extends State<HomePage> {
                         children: [
                           Text(
                             selectedFamily.members![index].name,
-                            style: selectedFamily.members![index].hasAccepted
-                                ? textStyle2().copyWith(
-                                    fontSize: screenWidth * 3.5, color: greyBackground, fontWeight: FontWeight.w900)
-                                : textStyle2().copyWith(fontSize: screenWidth * 3.5),
+                            style: selectedFamily.members![index].hasAccepted ? textStyles.whiteText3(dimensions) : textStyles.blackText3(dimensions),
                           ),
                           if (selectedFamily.members![index].hasAccepted)
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                SizedBox(width: screenWidth * 2),
+                                SizedBox(width: dimensions.screenWidth * 2),
                                 Padding(
-                                  padding: EdgeInsets.only(bottom: screenHeight * 0.5),
+                                  padding: EdgeInsets.only(bottom: dimensions.screenHeight * 0.5),
                                   child: Icon(Icons.check,
-                                      size: screenWidth * 5, // Adjust the size as needed
+                                      size: dimensions.screenWidth * 5, // Adjust the size as needed
                                       color: greyBackground // Adjust the color as needed
                                       ),
                                 ),
@@ -372,59 +325,52 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
                 if (selectedFamily.members![index].isNew)
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: screenWidth * 2,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: screenHeight * 2),
-                        child: IconButton(
-                          icon: Icon(Icons.delete),
-                          iconSize: screenWidth * 8, // Adjust the size as needed
-                          color: Color.fromARGB(255, 116, 35, 30),
-                          onPressed: () {
-                            setState(() {
-                              selectedFamily.members!.removeAt(index);
-                            });
-                          }, // Adjust the color as needed
-                        ),
-                      ),
-                    ],
+                  Padding(
+                    padding: EdgeInsets.only(left: dimensions.screenWidth * 2, top: dimensions.screenHeight * 2),
+                    child: IconButton(
+                      icon: Icon(Icons.delete),
+                      iconSize: dimensions.screenWidth * 8, // Adjust the size as needed
+                      color: Color.fromARGB(255, 116, 35, 30),
+                      onPressed: () {
+                        setState(() {
+                          selectedFamily.members!.removeAt(index);
+                        });
+                      }, // Adjust the color as needed
+                    ),
                   )
               ],
             );
           },
         ),
         SizedBox(
-          height: screenWidth * 4,
+          height: dimensions.screenWidth * 4,
         ),
         (isInputVisible)
             ? Padding(
-                padding: EdgeInsets.only(left: screenWidth * 15),
+                padding: EdgeInsets.only(left: dimensions.screenWidth * 15),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      width: screenWidth * 60,
-                      height: screenWidth * 12,
+                      width: dimensions.screenWidth * 60,
+                      height: dimensions.screenWidth * 12,
                       child: TextField(
-                        style: textStyle2(),
                         onChanged: (value) {
                           // Update the name variable when text changes
                           setState(() {
                             name = value;
                           });
                         },
+                        style: textStyles.blackText3(dimensions),
                         decoration: InputDecoration(
-                            contentPadding: EdgeInsets.symmetric(horizontal: screenWidth * 4),
+                            contentPadding: EdgeInsets.symmetric(horizontal: dimensions.screenWidth * 4, vertical: dimensions.screenWidth * 5),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(20),
                             ), // Outline border
                             labelText: 'Plusz fő hozzáadása',
-                            labelStyle: textStyle2(),
+                            labelStyle: textStyles.blackText3(dimensions),
                             suffixIcon: Padding(
-                              padding: EdgeInsets.only(right: screenWidth * 2),
+                              padding: EdgeInsets.only(right: dimensions.screenWidth * 2),
                               child: IconButton(
                                 icon: const Icon(Icons.check),
                                 onPressed: () {
@@ -444,11 +390,11 @@ class _HomePageState extends State<HomePage> {
                     Row(
                       children: [
                         SizedBox(
-                          width: screenWidth * 2,
+                          width: dimensions.screenWidth * 2,
                         ),
                         IconButton(
                           icon: Icon(Icons.delete),
-                          iconSize: screenWidth * 8, // Adjust the size as needed
+                          iconSize: dimensions.screenWidth * 8, // Adjust the size as needed
                           color: Color.fromARGB(255, 116, 35, 30), // Adjust the color as needed
                           onPressed: () {
                             setState(() {
@@ -462,7 +408,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               )
             : SizedBox(
-                height: screenWidth * 10,
+                height: dimensions.screenWidth * 10,
                 child: OutlinedButton(
                   onPressed: () {
                     setState(() {
@@ -478,94 +424,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
       ],
-    );
-  }
-
-  TextStyle textStyle() {
-    return TextStyle(fontFamily: "Kalam", color: appColors.darkBrownText);
-  }
-
-  TextStyle textStyle2() {
-    return TextStyle(fontFamily: "Kalam", color: appColors.blackText);
-  }
-
-  void closingModal(screenHeight, screenWidth) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return Material(
-          type: MaterialType.transparency,
-          child: Padding(
-            padding: EdgeInsets.all(screenWidth * 5),
-            child: Center(
-              child: Container(
-                decoration: BoxDecoration(color: appColors.greyBackground, borderRadius: BorderRadius.circular(20)),
-                height: screenWidth * 68,
-                width: screenWidth * 75,
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Köszönjük, hogy kitöltötted!',
-                      style: textStyle2().copyWith(fontSize: screenWidth * 5, fontWeight: FontWeight.w800),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: screenHeight * 2),
-                    Text(
-                      'Az esküvőn találkozunk! 🤟',
-                      style: textStyle2().copyWith(fontSize: screenWidth * 4),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: screenHeight),
-                    Text(
-                      'Ha bármi kérdésed lenne, hívj bátran:',
-                      style: textStyle2().copyWith(fontSize: screenWidth * 4),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: screenHeight),
-                    Text(
-                      'Blanka: +36 30 258 4048',
-                      style: textStyle2().copyWith(fontSize: screenWidth * 4),
-                      textAlign: TextAlign.center,
-                    ),
-                    Text(
-                      'Petya: +36 30 011 8743',
-                      style: textStyle2().copyWith(fontSize: screenWidth * 4),
-                      textAlign: TextAlign.center,
-                    ),
-                    SizedBox(height: screenHeight * 2),
-                    Padding(
-                      padding: EdgeInsets.only(left: screenWidth * 10, right: screenWidth * 10),
-                      child: Container(
-                        height: screenWidth * 10,
-                        width: screenWidth * 20,
-                        child: OutlinedButton(
-                            style: ButtonStyle(
-                              foregroundColor: MaterialStateProperty.all<Color>(appColors.greyBackground), // Text color
-                              backgroundColor: MaterialStateProperty.all<Color>(appColors.darkGreenButton), // Fill color
-                              side: MaterialStateProperty.all<BorderSide>(
-                                  BorderSide(color: appColors.greyBackground)), // Border color
-                            ),
-                            onPressed: () {
-                              Navigator.pop(context); // Close the modal when the button is pressed
-                            },
-                            child: Text("Bezár",
-                                style: textStyle().copyWith(
-                                    fontWeight: FontWeight.w900,
-                                    fontSize: screenWidth * 4,
-                                    color: appColors.greyBackground))),
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }

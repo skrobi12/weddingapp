@@ -23,16 +23,15 @@ class _MyWidgetState extends State<ImageSlider> {
     super.initState();
     _pageController = PageController(initialPage: 0);
     // Start a timer to change images with individual durations
-    for (int i = 0; i < 2; i++) {
-      Timer.periodic(const Duration(seconds: 5), (timer) {
-        if (_currentPageIndex < _imagePaths.length - 1) {
-          _pageController.animateToPage(_currentPageIndex + 1, duration: const Duration(seconds: 2), curve: Curves.ease);
-        } else {
-          // Jump from the last image to the first image
-          _pageController.jumpToPage(0);
-        }
-      });
-    }
+
+    Timer.periodic(const Duration(seconds: 5), (timer) {
+      if (_currentPageIndex < _imagePaths.length - 1) {
+        _pageController.animateToPage(_currentPageIndex + 1, duration: const Duration(seconds: 2), curve: Curves.ease);
+      } else {
+        // Jump from the last image to the first image
+        _pageController.jumpToPage(0);
+      }
+    });
   }
 
   @override
@@ -44,7 +43,8 @@ class _MyWidgetState extends State<ImageSlider> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: widget.dimensions.screenWidth * 62,
+      height: widget.dimensions.screenHeight * 32,
+      width: widget.dimensions.screenWidth * 100,
       child: PageView.builder(
         scrollDirection: Axis.horizontal,
         controller: _pageController,
