@@ -5,16 +5,16 @@ import 'package:wedding/constants/text_styles.dart';
 class TextTitle extends StatelessWidget {
   final ScreenDimensions dimensions;
   final TextStyles textStyles;
+  final String title;
 
-  const TextTitle({Key? key, required this.dimensions, required this.textStyles}) : super(key: key);
-
-  final String _commentTitle = "Add meg a megjegyzéseidet!";
+  const TextTitle({Key? key, required this.dimensions, required this.title, required this.textStyles}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      _commentTitle,
-      style: textStyles.blackText5(dimensions),
+      title,
+      style: textStyles.blackTextLarge(dimensions),
+      textAlign: TextAlign.center,
     );
   }
 }

@@ -31,8 +31,7 @@ class TextCard extends StatelessWidget {
       height: dimensions.screenHeight * textCardHeight,
       width: dimensions.screenWidth * 85,
       child: Padding(
-        padding: EdgeInsets.only(
-            left: dimensions.screenWidth * 3.5, right: dimensions.screenWidth * 3.5, top: dimensions.screenHeight * 1.8, bottom: dimensions.screenHeight * 1.8),
+        padding: EdgeInsets.symmetric(horizontal: dimensions.screenWidth * 3.5, vertical: dimensions.screenHeight * 1.8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -41,15 +40,15 @@ class TextCard extends StatelessWidget {
                 children: [
                   Text(
                     _name1,
-                    style: textStyles.darkBrownText6(dimensions),
+                    style: textStyles.darkBrownTextLarge(dimensions),
                   ),
                   Text(
                     "&",
-                    style: textStyles.darkBrownText4(dimensions),
+                    style: textStyles.darkBrownTextMedium(dimensions),
                   ),
                   Text(
                     _name2,
-                    style: textStyles.darkBrownText6(dimensions),
+                    style: textStyles.darkBrownTextLarge(dimensions),
                   ),
                 ],
               ),
@@ -58,12 +57,12 @@ class TextCard extends StatelessWidget {
                 children: [
                   Text(
                     _location,
-                    style: textStyles.darkBrownText4(dimensions),
+                    style: textStyles.darkBrownTextMedium(dimensions),
                   ),
                   SizedBox(height: dimensions.screenHeight * 2),
                   Text(
                     _date,
-                    style: textStyles.darkBrownText4(dimensions),
+                    style: textStyles.darkBrownTextMedium(dimensions),
                   ),
                 ],
               ),
@@ -71,7 +70,7 @@ class TextCard extends StatelessWidget {
               Text(
                 _invitation,
                 textAlign: TextAlign.center,
-                style: textStyles.darkBrownText3(dimensions),
+                style: textStyles.darkBrownTextSmall(dimensions),
               ),
           ],
         ),

@@ -36,7 +36,7 @@ class _ListOfMembersState extends State<ListOfMembers> {
           child: Text(
             "Jelöld be, melyik családtagod tud részt venni az esküvőn",
             textAlign: TextAlign.center,
-            style: widget.textStyles.blackText5(widget.dimensions),
+            style: widget.textStyles.blackTextLarge(widget.dimensions),
           ),
         ),
         SizedBox(
@@ -78,8 +78,8 @@ class _ListOfMembersState extends State<ListOfMembers> {
                           Text(
                             widget.selectedFamily.members![index].name,
                             style: widget.selectedFamily.members![index].hasAccepted
-                                ? widget.textStyles.whiteText3(widget.dimensions)
-                                : widget.textStyles.blackText3(widget.dimensions),
+                                ? widget.textStyles.whiteTextMedium(widget.dimensions)
+                                : widget.textStyles.blackTextSmall(widget.dimensions),
                           ),
                           if (widget.selectedFamily.members![index].hasAccepted)
                             Row(

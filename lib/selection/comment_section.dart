@@ -10,9 +10,7 @@ class CommentSection extends StatelessWidget {
   final TextStyles textStyles;
   final Family selectedFamily;
 
-  const CommentSection(
-      {Key? key, required this.dimensions, required this.appColors, required this.textStyles, required this.selectedFamily})
-      : super(key: key);
+  const CommentSection({Key? key, required this.dimensions, required this.appColors, required this.textStyles, required this.selectedFamily}) : super(key: key);
 
   final String _hintText = 'pl.: laktózérzékeny vagyok, nem bírom a Petyát :(';
 
@@ -20,15 +18,13 @@ class CommentSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: appColors.greyBackground,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: appColors.greenInputBorder, width: 2)),
-      height: dimensions.screenWidth * 42,
+          color: appColors.greyBackground, borderRadius: BorderRadius.circular(20), border: Border.all(color: appColors.greenInputBorder, width: 2)),
+      height: dimensions.screenHeight * 25,
       width: dimensions.screenWidth * 80,
       child: Padding(
         padding: EdgeInsets.only(left: dimensions.screenWidth * 4, right: dimensions.screenWidth * 4),
         child: TextField(
-          style: textStyles.blackText3(dimensions),
+          style: textStyles.blackTextSmall(dimensions),
           onTap: () {
             // Add a delay before scrolling
             // scrollToBottom();
@@ -37,8 +33,7 @@ class CommentSection extends StatelessWidget {
             selectedFamily.comment = value;
           },
           //controller: _familyCommentsController,
-          decoration: InputDecoration(
-              border: InputBorder.none, hintText: _hintText, hintMaxLines: 3, hintStyle: textStyles.blackText3(dimensions)),
+          decoration: InputDecoration(border: InputBorder.none, hintText: _hintText, hintMaxLines: 3, hintStyle: textStyles.blackTextSmall(dimensions)),
         ),
       ),
     );

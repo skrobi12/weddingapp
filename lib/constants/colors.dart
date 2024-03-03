@@ -12,4 +12,5 @@ class AppColors {
   Color darkGreenDropDownList = const Color(0xffbdc7b7);
   Color darkBrownText = const Color(0xff4f433d);
   Color blackText = const Color(0xff322b27);
+  Color redDeleteIcon = const Color(0xff5e1914);
 }

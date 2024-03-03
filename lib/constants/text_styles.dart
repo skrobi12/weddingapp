@@ -3,35 +3,35 @@ import 'package:wedding/constants/colors.dart';
 
 class TextStyles {
   AppColors appColors = AppColors();
-  TextStyle darkBrownText6(dimensions) {
+  TextStyle darkBrownTextLarge(dimensions) {
     return TextStyle(fontFamily: "Kalam", color: appColors.darkBrownText, fontSize: dimensions.screenHeight * 3.6);
   }
 
-  TextStyle darkBrownText4(dimensions) {
+  TextStyle darkBrownTextMedium(dimensions) {
     return TextStyle(fontFamily: "Kalam", color: appColors.darkBrownText, fontSize: dimensions.screenHeight * 2.7);
   }
 
-  TextStyle darkBrownText3(dimensions) {
+  TextStyle darkBrownTextSmall(dimensions) {
     return TextStyle(fontFamily: "Kalam", color: appColors.darkBrownText, fontSize: dimensions.screenHeight * 1.9);
   }
 
-  TextStyle blackText3(dimensions) {
+  TextStyle blackTextLarge(dimensions) {
+    return TextStyle(fontFamily: "Kalam", color: appColors.blackText, fontSize: dimensions.screenHeight * 2.7);
+  }
+
+  TextStyle blackTextMedium(dimensions) {
+    return TextStyle(fontFamily: "Kalam", color: appColors.blackText, fontSize: dimensions.screenHeight * 2.2);
+  }
+
+  TextStyle blackTextSmall(dimensions) {
     return TextStyle(fontFamily: "Kalam", color: appColors.blackText, fontSize: dimensions.screenHeight * 1.9);
   }
 
-  TextStyle blackText4(dimensions) {
-    return TextStyle(fontFamily: "Kalam", color: appColors.blackText, fontSize: dimensions.screenWidth * 4);
+  TextStyle whiteTextLarge(dimensions) {
+    return TextStyle(fontFamily: "Kalam", fontWeight: FontWeight.w900, color: appColors.greyBackground, fontSize: dimensions.screenHeight * 2.5);
   }
 
-  TextStyle blackText5(dimensions) {
-    return TextStyle(fontFamily: "Kalam", color: appColors.blackText, fontSize: dimensions.screenWidth * 4.8);
-  }
-
-  TextStyle whiteText5(dimensions) {
-    return TextStyle(fontFamily: "Kalam", fontWeight: FontWeight.w900, color: appColors.greyBackground, fontSize: dimensions.screenWidth * 4.8);
-  }
-
-  TextStyle whiteText3(dimensions) {
-    return TextStyle(fontFamily: "Kalam", fontWeight: FontWeight.w900, color: appColors.greyBackground, fontSize: dimensions.screenWidth * 3.5);
+  TextStyle whiteTextMedium(dimensions) {
+    return TextStyle(fontFamily: "Kalam", fontWeight: FontWeight.w900, color: appColors.greyBackground, fontSize: dimensions.screenHeight * 2);
   }
 }

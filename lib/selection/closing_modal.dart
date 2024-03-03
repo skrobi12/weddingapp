@@ -32,30 +32,30 @@ class ClosingModal {
                   children: [
                     Text(
                       _title,
-                      style: textStyles.blackText5(dimensions),
+                      style: textStyles.blackTextLarge(dimensions),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: dimensions.screenHeight * 2),
                     Text(
                       _subTitle,
-                      style: textStyles.blackText4(dimensions),
+                      style: textStyles.blackTextMedium(dimensions),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: dimensions.screenHeight),
                     Text(
                       _infoText,
-                      style: textStyles.blackText4(dimensions),
+                      style: textStyles.blackTextMedium(dimensions),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: dimensions.screenHeight),
                     Text(
                       _mobileNumber1,
-                      style: textStyles.blackText4(dimensions),
+                      style: textStyles.blackTextMedium(dimensions),
                       textAlign: TextAlign.center,
                     ),
                     Text(
                       _mobileNumber2,
-                      style: textStyles.blackText4(dimensions),
+                      style: textStyles.blackTextMedium(dimensions),
                       textAlign: TextAlign.center,
                     ),
                     SizedBox(height: dimensions.screenHeight * 2),
@@ -65,7 +65,7 @@ class ClosingModal {
                           buttonTitle: "Bezár",
                           onPressedFunction: () {
                             Navigator.pop(context);
-                            html.window.location.reload();
+                            //html.window.location.reload();
                           },
                           dimensions: dimensions,
                           appColors: appColors,

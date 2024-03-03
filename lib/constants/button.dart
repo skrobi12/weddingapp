@@ -11,12 +11,7 @@ class Button extends StatelessWidget {
   final VoidCallback onPressedFunction;
 
   const Button(
-      {Key? key,
-      required this.buttonTitle,
-      required this.onPressedFunction,
-      required this.dimensions,
-      required this.appColors,
-      required this.textStyles})
+      {Key? key, required this.buttonTitle, required this.onPressedFunction, required this.dimensions, required this.appColors, required this.textStyles})
       : super(key: key);
 
   @override
@@ -33,7 +28,7 @@ class Button extends StatelessWidget {
           onPressed: () {
             onPressedFunction();
           },
-          child: Text(buttonTitle, style: textStyles.whiteText5(dimensions))),
+          child: Text(buttonTitle, style: textStyles.whiteTextLarge(dimensions))),
     );
   }
 }

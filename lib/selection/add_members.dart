@@ -42,14 +42,14 @@ class _AddMembersState extends State<AddMembers> {
                         name = value;
                       });
                     },
-                    style: widget.textStyles.blackText3(widget.dimensions),
+                    style: widget.textStyles.blackTextSmall(widget.dimensions),
                     decoration: InputDecoration(
                         contentPadding: EdgeInsets.symmetric(horizontal: widget.dimensions.screenWidth * 4, vertical: widget.dimensions.screenWidth * 5),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                         ), // Outline border
                         labelText: 'Plusz fő hozzáadása',
-                        labelStyle: widget.textStyles.blackText3(widget.dimensions),
+                        labelStyle: widget.textStyles.blackTextSmall(widget.dimensions),
                         suffixIcon: Padding(
                           padding: EdgeInsets.only(right: widget.dimensions.screenWidth * 2),
                           child: IconButton(
