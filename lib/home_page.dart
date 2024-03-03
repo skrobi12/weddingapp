@@ -94,27 +94,13 @@ class _HomePageState extends State<HomePage> {
     ScreenDimensions dimensions = ScreenDimensions(context);
     //fechPeopleCall();
     return Scaffold(
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       backgroundColor: appColors.greyBackground,
       body: Center(
         child: SingleChildScrollView(
           controller: _scrollController,
           child: Column(
             children: [
-              // FutureBuilder<List<Person>>(
-              //   future: futurePeople,
-              //   builder: (context, snapshot) {
-              //     if (snapshot.hasData) {
-              //       _allPeople = snapshot.data!;
-              //       return Container();
-              //     } else if (snapshot.hasError) {
-              //       return Text('${snapshot.error}');
-              //     } else {
-              //       // By default, show a loading spinner.
-              //       return const CircularProgressIndicator();
-              //     }
-              //   },
-              // ),
               SizedBox(height: dimensions.screenHeight * 2),
               ImageSlider(
                 dimensions: dimensions,
