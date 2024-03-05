@@ -12,7 +12,7 @@ class TextStyles {
   }
 
   TextStyle darkBrownTextSmall(dimensions) {
-    return TextStyle(fontFamily: "Kalam", color: appColors.darkBrownText, fontSize: dimensions.screenHeight * 1.9);
+    return TextStyle(fontFamily: "Kalam", color: appColors.darkBrownText, fontSize: dimensions.screenHeight * 2.3);
   }
 
   TextStyle blackTextLarge(dimensions) {
@@ -28,10 +28,18 @@ class TextStyles {
   }
 
   TextStyle whiteTextLarge(dimensions) {
-    return TextStyle(fontFamily: "Kalam", fontWeight: FontWeight.w900, color: appColors.greyBackground, fontSize: dimensions.screenHeight * 2.5);
+    return TextStyle(fontFamily: "Kalam", fontWeight: FontWeight.w500, color: appColors.greyBackground, fontSize: dimensions.screenHeight * 2.5);
   }
 
   TextStyle whiteTextMedium(dimensions) {
-    return TextStyle(fontFamily: "Kalam", fontWeight: FontWeight.w900, color: appColors.greyBackground, fontSize: dimensions.screenHeight * 2);
+    return TextStyle(fontFamily: "Kalam", color: appColors.greyBackground, fontSize: dimensions.screenHeight * 2);
+  }
+
+  TextStyle greenTextSmall(dimensions) {
+    return TextStyle(fontFamily: "Kalam", color: appColors.darkGreenButton, fontSize: dimensions.screenHeight * 1.5);
+  }
+
+  TextStyle greenTextLarge(dimensions) {
+    return TextStyle(fontFamily: "Kalam", fontWeight: FontWeight.w500, color: appColors.darkGreenButton, fontSize: dimensions.screenHeight * 2.5);
   }
 }

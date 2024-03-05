@@ -15,14 +15,13 @@ class ImageSlider extends StatefulWidget {
 
 int _currentPageIndex = 0;
 late PageController _pageController;
-final List<String> _imagePaths = List.generate(6, (index) => "assets/images/Image${(index % 5) + 1}.jpg");
+final List<String> _imagePaths = List.generate(9, (index) => "assets/images/Image${(index % 8) + 1}.jpg");
 
 class _MyWidgetState extends State<ImageSlider> {
   @override
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 0);
-    // Start a timer to change images with individual durations
 
     Timer.periodic(const Duration(seconds: 5), (timer) {
       if (_currentPageIndex < _imagePaths.length - 1) {
@@ -32,6 +31,15 @@ class _MyWidgetState extends State<ImageSlider> {
         _pageController.jumpToPage(0);
       }
     });
+  }
+
+  @override
+  void didChangeDependencies() {
+    // Adjust the provider based on the image type
+    for (String imagePath in _imagePaths) {
+      precacheImage(AssetImage(imagePath), context);
+    }
+    super.didChangeDependencies();
   }
 
   @override

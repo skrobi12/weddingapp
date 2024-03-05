@@ -12,7 +12,7 @@ class CommentSection extends StatelessWidget {
 
   const CommentSection({Key? key, required this.dimensions, required this.appColors, required this.textStyles, required this.selectedFamily}) : super(key: key);
 
-  final String _hintText = 'pl.: laktózérzékeny vagyok, nem bírom a Petyát :(';
+  final String _hintText = 'pl.: laktózérzékeny vagyok, stb...';
 
   @override
   Widget build(BuildContext context) {

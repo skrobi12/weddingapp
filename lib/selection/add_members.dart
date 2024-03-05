@@ -6,15 +6,23 @@ import 'package:wedding/constants/text_styles.dart';
 
 import '../classes/person_class.dart';
 
+// ignore: must_be_immutable
 class AddMembers extends StatefulWidget {
   final ScreenDimensions dimensions;
   final AppColors appColors;
   final TextStyles textStyles;
   final Family selectedFamily;
   bool isInputVisible;
+  Function onFamilyRecieved;
 
   AddMembers(
-      {Key? key, required this.dimensions, required this.isInputVisible, required this.selectedFamily, required this.appColors, required this.textStyles})
+      {Key? key,
+      required this.dimensions,
+      required this.onFamilyRecieved,
+      required this.isInputVisible,
+      required this.selectedFamily,
+      required this.appColors,
+      required this.textStyles})
       : super(key: key);
 
   @override
@@ -32,7 +40,7 @@ class _AddMembersState extends State<AddMembers> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
+                SizedBox(
                   width: widget.dimensions.screenWidth * 60,
                   height: widget.dimensions.screenWidth * 12,
                   child: TextField(
@@ -60,6 +68,7 @@ class _AddMembersState extends State<AddMembers> {
 
                                 name = "";
                                 widget.isInputVisible = false;
+                                widget.onFamilyRecieved(widget.selectedFamily);
                               });
                             },
                           ),
@@ -74,9 +83,9 @@ class _AddMembersState extends State<AddMembers> {
                       width: widget.dimensions.screenWidth * 2,
                     ),
                     IconButton(
-                      icon: Icon(Icons.delete),
+                      icon: const Icon(Icons.delete),
                       iconSize: widget.dimensions.screenWidth * 8, // Adjust the size as needed
-                      color: Color.fromARGB(255, 116, 35, 30), // Adjust the color as needed
+                      color: widget.appColors.redDeleteIcon, // Adjust the color as needed
                       onPressed: () {
                         setState(() {
                           widget.isInputVisible = false;
@@ -96,12 +105,12 @@ class _AddMembersState extends State<AddMembers> {
                   widget.isInputVisible = true;
                 });
               },
-              child: Icon(Icons.add),
               style: OutlinedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20), // Set borderRadius to zero
                 ),
               ),
+              child: const Icon(Icons.add),
             ),
           );
   }

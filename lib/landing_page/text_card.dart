@@ -16,11 +16,13 @@ class TextCard extends StatelessWidget {
 
   final _name1 = "Blanka";
   final _name2 = "Petya";
-  final _location = "Szentpéterfa";
+  final _location = "Szentpéterfa, Kossuth L. u. 52.";
   final _date = "2024.07.27.";
-  final _invitation =
-      "Kedves Családunk, Rokonaink és Barátaink!\nÖrömmel tudatjuk, hogy nemsokára eljön a nagy nap,\nmikor mindazok előtt, akik fontosak az életünkben,\nörök hűséget fogadunk egymásnak.\n\nSzeretnénk, ha velünk együtt örülnétek és\nünnepelnétek ezen a fontos napon,\nezért szeretettel meghívunk\n2024. Július 27-én 17:00 órakor a\nszentpéterfai Szent István Király kápolnában tartandó\nesküvőnkre, az azt követő vacsorára,\nmajd a hajnalig tartó mulatságra.";
-
+  final _invitation1 = "Kedves Családunk, Rokonaink és Barátaink!";
+  final _invitation2 =
+      "Örömmel tudatjuk, hogy nemsokára eljön a nagy nap, mikor mindazok előtt, akik fontosak az életünkben, örök hűséget fogadunk egymásnak.\n\nSzeretnénk, ha velünk együtt örülnétek és ünnepelnétek ezen a fontos napon, ezért szeretettel meghívunk";
+  final _invitation3 = "2024. Július 27-én 17:00 órakor";
+  final _invitation4 = "a szentpéterfai Szent István Király kápolnában tartandó esküvőnkre, az azt követő vacsorára, majd a hajnalig tartó mulatságra.";
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -28,10 +30,9 @@ class TextCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(20),
         color: appColors.lightGreenCard, // Adjust this color as per your requirement
       ),
-      height: dimensions.screenHeight * textCardHeight,
       width: dimensions.screenWidth * 85,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: dimensions.screenWidth * 3.5, vertical: dimensions.screenHeight * 1.8),
+        padding: EdgeInsets.symmetric(horizontal: dimensions.screenWidth * 3.5, vertical: dimensions.screenHeight * 2),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -58,8 +59,9 @@ class TextCard extends StatelessWidget {
                   Text(
                     _location,
                     style: textStyles.darkBrownTextMedium(dimensions),
+                    textAlign: TextAlign.center,
                   ),
-                  SizedBox(height: dimensions.screenHeight * 2),
+                  SizedBox(height: dimensions.screenHeight * 1.8),
                   Text(
                     _date,
                     style: textStyles.darkBrownTextMedium(dimensions),
@@ -67,10 +69,32 @@ class TextCard extends StatelessWidget {
                 ],
               ),
             if (textCardType == "invitation")
-              Text(
-                _invitation,
-                textAlign: TextAlign.center,
-                style: textStyles.darkBrownTextSmall(dimensions),
+              Column(
+                children: [
+                  Text(
+                    _invitation1,
+                    textAlign: TextAlign.center,
+                    style: textStyles.darkBrownTextSmall(dimensions).copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: dimensions.screenHeight * 2),
+                  Text(
+                    _invitation2,
+                    textAlign: TextAlign.center,
+                    style: textStyles.darkBrownTextSmall(dimensions),
+                  ),
+                  SizedBox(height: dimensions.screenHeight * 2),
+                  Text(
+                    _invitation3,
+                    textAlign: TextAlign.center,
+                    style: textStyles.darkBrownTextSmall(dimensions).copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: dimensions.screenHeight * 2),
+                  Text(
+                    _invitation4,
+                    textAlign: TextAlign.center,
+                    style: textStyles.darkBrownTextSmall(dimensions),
+                  ),
+                ],
               ),
           ],
         ),

@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Wedding',
+      title: 'B&P Wedding',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xffa3b19a)),
         useMaterial3: true,
